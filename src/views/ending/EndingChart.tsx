@@ -9,6 +9,7 @@ import { initialGoal } from '../../simulation/goals';
 import { eventById } from '../../events/definitions';
 import { formatMoney } from '../../lib/format';
 import type { SimState, SimStatus, YearState } from '../../simulation/types';
+import WealthChartGuide from '../../components/WealthChartGuide';
 
 echarts.use([LineChart, ScatterChart, GridComponent, TooltipComponent, MarkPointComponent, CanvasRenderer, LegacyGridContainLabel]);
 
@@ -82,13 +83,13 @@ export default function EndingChart({ sim, status }: { sim: SimState; status: Ex
         formatter: (params: unknown) => {
           const list = params as { dataIndex: number }[];
           const idx = list[0]?.dataIndex ?? 0;
-          if (idx === 0) return `开局<br/>资产 ${formatMoney(inputs.initialAssets)}`;
+          if (idx === 0) return `开局<br/>你的财富 ${formatMoney(inputs.initialAssets)}`;
           const y = years[idx - 1];
           if (!y) return '';
           const lines = [
             `${y.calendarYear} · ${y.age} 岁`,
-            `资产 ${formatMoney(y.assets)}`,
-            `目标 ${formatMoney(y.goalAmount)}`,
+            `你的财富 ${formatMoney(y.assets)}`,
+            `财富自由目标 ${formatMoney(y.goalAmount)}`,
           ];
           if (y.eventId) {
             const def = eventById(y.eventId);
@@ -102,7 +103,7 @@ export default function EndingChart({ sim, status }: { sim: SimState; status: Ex
       },
       series: [
         {
-          name: '目标',
+          name: '财富自由目标',
           type: 'line',
           data: goals,
           symbol: 'none',
@@ -111,7 +112,7 @@ export default function EndingChart({ sim, status }: { sim: SimState; status: Ex
           z: 1,
         },
         {
-          name: '资产',
+          name: '你的财富',
           type: 'line',
           data: assets,
           symbol: 'none',
@@ -172,7 +173,8 @@ export default function EndingChart({ sim, status }: { sim: SimState; status: Ex
 
   return (
     <div>
-      <div ref={elRef} role="img" aria-label="人生资产与目标曲线；逐年数据见下方" className="h-[240px] w-full sm:h-[300px]" />
+      <WealthChartGuide goalMode={sim.inputs.goal.mode} />
+      <div ref={elRef} role="img" aria-label="你的财富（绿色实线）与财富自由目标（黄色虚线）的人生曲线；逐年数据见下方" className="h-[240px] w-full sm:h-[300px]" />
       <details className="mt-2 text-left text-xs text-zinc-400">
         <summary className="flex min-h-11 cursor-pointer items-center">查看人生逐年数据</summary>
         <ol className="max-h-64 space-y-3 overflow-y-auto py-2">

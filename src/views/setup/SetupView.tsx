@@ -143,10 +143,13 @@ export default function SetupView() {
         className="relative w-full max-w-lg"
       >
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">
-            财富人生<span className="text-wealth-400">模拟器</span>
+          <h1 className="text-4xl leading-tight font-semibold tracking-tight text-zinc-50 sm:text-5xl">
+            <span className="block">你会在几岁</span>
+            <span className="block text-wealth-400">实现财富自由？</span>
           </h1>
-          <p className="mt-3 text-sm text-zinc-400">输入你的现在，观看你的未来。</p>
+          <p className="mt-4 text-sm leading-6 text-balance text-zinc-400">
+            输入现在的收入和存款，看看未来几十年的财富如何变化。遇到人生转折，你还可以亲自做出选择，改变未来。
+          </p>
         </div>
 
         {shareError && (
@@ -209,13 +212,21 @@ export default function SetupView() {
             {goalMode === 'auto' ? (
               <p className="mt-2 text-sm text-zinc-400">
                 目标 <span className="tnum text-wealth-300">{formatMoney(autoGoal)}</span>
-                <span className="ml-2 text-xs text-zinc-500">随通胀逐年抬升</span>
+                <span className="ml-2 text-xs text-zinc-400">随生活支出调整</span>
               </p>
             ) : (
               <div className="mt-2">
                 <AmountInput label="自定义目标金额" value={manualGoal} onChange={setManualGoal} error={errors.goal} />
               </div>
             )}
+            <div className="mt-2 space-y-1 text-xs leading-5 text-balance text-zinc-400">
+              <p>
+                {goalMode === 'auto'
+                  ? `可投资资产达到约 ${DEFAULT_CONFIG.withdrawalMultiple} 倍年度生活支出，即达到游戏的自动目标。`
+                  : '可投资资产达到你设定的目标，即达到游戏的财富自由目标；目标随通胀逐年上升。'}
+              </p>
+              <p>这只是简化的模拟规则，不代表现实中一定可以安全退休。</p>
+            </div>
           </div>
 
           {expenses > income && (

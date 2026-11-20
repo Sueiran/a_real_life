@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useSimStore, type Speed } from '../../store/simStore';
 import { useUiStore } from '../../store/uiStore';
@@ -7,10 +8,11 @@ import AssetCounter from './AssetCounter';
 import WealthChart from './WealthChart';
 import EventCard from './EventCard';
 import HistoryDrawer from './HistoryDrawer';
+import WealthChartGuide from '../../components/WealthChartGuide';
 
 const SPEEDS: Speed[] = [1, 2, 4];
 
-export default function SimulationView() {
+export default function SimulationView({ firstVisit, onIntroSeen }: { firstVisit: boolean; onIntroSeen: () => void }) {
   const sim = useSimStore((s) => s.sim);
   const runId = useSimStore((s) => s.runId);
   const playback = useSimStore((s) => s.playback);
@@ -21,6 +23,8 @@ export default function SimulationView() {
   const replaying = useSimStore((s) => s.replayChoices !== null);
   const historyOpen = useUiStore((s) => s.historyOpen);
   const setHistoryOpen = useUiStore((s) => s.setHistoryOpen);
+  const [introRunId] = useState(firstVisit && !replaying ? runId : null);
+  useEffect(() => { onIntroSeen(); }, [onIntroSeen]);
 
   if (!sim) return null;
   const { inputs, config, years, pending } = sim;
@@ -111,6 +115,12 @@ export default function SimulationView() {
       </header>
 
       <main className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col">
+        {introRunId === runId && !replaying && !years.some((y) => y.choiceId !== null) && (
+          <div className="mt-4 shrink-0 text-center text-sm leading-6 text-zinc-400">
+            <p>时间正在向前推进，看看你的财富何时追上目标。</p>
+            <p>遇到人生事件时，由你做出选择。</p>
+          </div>
+        )}
         <div className="flex flex-1 flex-col items-center justify-center py-8 text-center sm:py-10">
           <AssetCounter value={assets} speed={speed} frozen={frozen} />
           <div className="mt-3 h-5">
@@ -143,7 +153,8 @@ export default function SimulationView() {
           </p>
         </div>
 
-        <div className="glass flex min-h-[280px] flex-1 flex-col rounded-2xl p-2 sm:min-h-[340px] sm:p-3">
+        <div className="glass flex min-h-[380px] flex-1 flex-col rounded-2xl p-2 sm:min-h-[400px] sm:p-3">
+          <WealthChartGuide goalMode={inputs.goal.mode} />
           <WealthChart sim={sim} runId={runId} frozen={frozen} />
         </div>
       </main>

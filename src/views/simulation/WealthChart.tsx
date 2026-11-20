@@ -58,7 +58,7 @@ export default function WealthChart({ sim, runId, frozen }: { sim: SimState; run
       },
       series: [
         {
-          name: '目标',
+          name: '财富自由目标',
           type: 'line',
           data: [],
           symbol: 'none',
@@ -67,7 +67,7 @@ export default function WealthChart({ sim, runId, frozen }: { sim: SimState; run
           z: 1,
         },
         {
-          name: '资产',
+          name: '你的财富',
           type: 'line',
           data: [],
           symbol: 'none',
@@ -120,5 +120,5 @@ export default function WealthChart({ sim, runId, frozen }: { sim: SimState; run
     else animation?.resume();
   }, [frozen, runId, reduced]);
 
-  return <div ref={elRef} role="img" aria-label="资产与目标随年份变化的曲线；当前金额见上方" className="min-h-0 w-full flex-1" />;
+  return <div ref={elRef} role="img" aria-label="你的财富（绿色实线）与财富自由目标（黄色虚线）随年份变化的曲线；当前金额见上方" className="min-h-0 w-full flex-1" />;
 }

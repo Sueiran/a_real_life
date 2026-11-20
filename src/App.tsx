@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense, useEffect, type ReactNode } from 'react';
+import { Component, lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
 import { useUiStore } from './store/uiStore';
 import { useSimStore } from './store/simStore';
@@ -6,6 +6,7 @@ import { syncDriver, stopDriver } from './playback/driver';
 import SetupView from './views/setup/SetupView';
 const EndingView = lazy(() => import('./views/ending/EndingView'));
 import SharedView from './views/shared/SharedView';
+import { loadLastInputs, loadRun } from './lib/storage';
 
 const SimulationView = lazy(() => import('./views/simulation/SimulationView'));
 
@@ -32,6 +33,8 @@ class ViewBoundary extends Component<{ children: ReactNode }, { failed: boolean 
 
 export default function App() {
   const view = useUiStore((s) => s.view);
+  const [firstVisit, setFirstVisit] = useState(() => !loadLastInputs() && !loadRun());
+  const markIntroSeen = useCallback(() => setFirstVisit(false), []);
 
   useEffect(() => {
     if (!bootstrapped) {
@@ -66,7 +69,7 @@ export default function App() {
               </div>
             }
           >
-            <SimulationView />
+            <SimulationView firstVisit={firstVisit} onIntroSeen={markIntroSeen} />
           </Suspense>
         )}
         {view === 'ending' && <Suspense fallback={<div className="min-h-screen bg-abyss-950" role="status" aria-label="正在展开结局" />}><EndingView /></Suspense>}
